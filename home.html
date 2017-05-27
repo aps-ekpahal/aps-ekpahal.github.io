@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="shortcut icon" href="aps.ico">
+	<!--<link rel="icon" href="aps.png" type="image/png" /> -->
+	<title>Alliance Public School</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <script  src="scripts/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="src/flip.js"></script>
+    <style type="text/css">
+        @font-face {
+  	font-family: 'FontAwesome';
+  	src: url('ufonts.com_childbonapartesh.eot') format('embedded-opentype');
+  src: url('ufonts.com_childbonapartesh.eot') format('embedded-opentype'),
+    url('ufonts.com_childbonapartesh.woff') format('woff');
+    src:url('ufonts.com_childbonapartesh.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+	}
+    .back, .front{
+      padding-top: 10px;
+      padding-left: 0px;
+      padding-right: 0px;
+      margin-right: 0px;
+      margin-left: 0px;
+    }
+    .back{
+      padding-bottom: 300px;
+    }
+    .front{
+      padding-bottom: 0px;
+      background-color: white;
+      height: 450px;
+    }
+    #card-2{
+      margin-right: 0px;
+      margin-left: 0px;
+      margin-bottom: 0px;
+    }
+    /*  .back, .other-front, .other-back {
+        border: 2px gray solid;
+        padding: 10px;
+      }
+      .back, .other-back {
+        padding-bottom: 100px;
+      }*/
+		.customfont { 
+    		font-family: "FontAwesome",Verdana,Tahoma;
+
+ 		}
+    #newstitle{
+      border: 2px gray solid;
+      height: 250px;
+      overflow: auto;
+      border-radius: 5px;
+      background-color: rgb(251,251,251);
+      margin-left: 0px;
+      margin-right: 0px;
+    }
+ 		#kk{
+ 			
+ 			background-color: rgb(10,26,60);
+ 			color: rgb(255,255,255);
+ 			margin-top: 0px;
+            margin-right: 0px;
+            margin-left: 0px;
+        padding-top: 0px;
+
+		}
+		.dropdown {
+    	position: relative;
+    	display: inline-block;
+	}
+
+		.dropdown-content {
+    	display: none;
+    	position: absolute;
+    	background-color: #f9f9f9;
+   	 	min-width: 160px;
+    	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    	padding: 12px 16px;
+    	z-index: 1;
+	}
+
+	.dropdown:hover .dropdown-content {
+    	display: block;
+      border-radius: 5px;
+	}
+	#menu{
+		font-weight: bold;
+    padding-left: 2px;
+    padding-right: 50px; 
+
+	}
+	#tab{
+		text-align: left;
+	}
+	th,td {
+    	padding-top: 5px; 
+    	vertical-align: center;
+    	white-space: nowrap;
+    overflow: hidden;
+    padding-right: 25px
+
+    	
+	}
+    .drop{
+        text-decoration: none;
+    }
+        .sliding-middle-out {
+    display: inline-block;
+    position: relative;
+    padding-bottom: 3px;
+}
+.sliding-middle-out:after {
+    content: '';
+    display: block;
+    margin: auto;
+    height: 3px;
+    width: 0px;
+    background: transparent;
+    transition: width .5s ease, background-color .5s ease; 
+}/*
+#newstitle> #newsdiv:hover{
+
+}*/
+
+.dropdown:hover >.sliding-middle-out:after {
+    width: 100%;
+    background: blue;
+}
+.newsdiv{
+  border-radius:6px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  padding:4px;
+}
+	/*td{
+		padding-right: 100px
+	}*/
+	#nav{
+		text-align: center;
+	}
+    #news{
+        border: 2px solid rgb(30,78,180);
+        border-radius: 15px;
+        background-color: white;
+    }
+
+    figcaption{
+      background-color: rgb(150,255,150);
+      padding-top: 10px;
+      padding-bottom: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    body{
+        background-color: rgb(212,202,81);
+    }
+
+</style>
+ <script type="text/javascript">
+    $(function(){
+      
+      $("#card-1").flip({
+        axis: "y", // y or x
+        reverse: true, // true and false
+        trigger: "hover", // click or hover
+        speed: '250',
+        front: $('.other-front'),
+        back: $('.other-back'),
+        autoSize: false
+      });
+      $("#card-2").flip({
+
+        axis: "x",
+        reverse: true,
+        timer:20,
+        trigger:"hover"
+      });
+      
+
+    });
+    </script>
+
+
+
+</head>
+<body >
+  <div class="row" id="kk" style="padding-bottom: 0px;margin-bottom: 0px;">
+    <div class="container">
+          <h1 class="customfont" style="text-align: center;font-size: 32px;padding-bottom: 0px;margin-bottom: 0px;padding-top: 0px;">ALLIANCE PUBLIC SCHOOL</h1>
+        <div class="row">
+          <div class="col-sm-8" style="display: table-cell;font-size: 16px;text-align: left;padding-left: 500px "><br>
+          <span style="font-family: monotype corsiva;">Mentored by </span>
+           <span style="font-family: century schoolbook;"><b>IIT</b>ians & <b>NIT</b>ians</span></div>
+          <div class="col-sm-4" style="margin-top: 0px;font-size: 14px;font-family: monotype corsiva;text-decoration: none;color: white;padding-left: 100px">preparing you for life</div>
+      </div>
+    </div>
+    </div>
+
+<div class="container">
+<div class="row" id="nav" >
+  <div class="dropdown"  id="raj">
+    <span id="menu" class="sliding-middle-out">About APS</span>
+    <div class="dropdown-content">
+      <table id="tab">
+      <tr><th>The School</th>    <th>The Team</th><td>We are Here</td></tr>
+      <tr><td>How it all started</td>    <td>Administration</td><td>How to reach Us</td></tr>
+      <tr><td>Vision, Mission & Motto</td> <td>The Principle</td> <td>APS Blog</td></tr>
+      <tr><td>Values & Objectives</td> <td>Educators</td> <td></td></tr>
+      <tr><td>What makes APS truely distinvtive?</td><td>Mentors/Inspiration</td><td></td></tr>
+      <tr><td></td><td>Collaborations</td><td></td></tr>
+      </table>
+      </div>
+    </div>
+      <div class="dropdown" >
+    <span id="menu" class="sliding-middle-out">Academics</span>
+    <div class="dropdown-content">
+      <table id="tab"><ul>
+       <tr><th>Departments</th> <th>Admissions</th>  <td></td> <th>Quick Links</th></tr>
+       <tr><td>Kindergarten</td> <td>Criteria</td>  <td>Students' Council</td> <td>CBSE</td></tr>
+       <tr><td><li>Students</li></td> <td>Fee Structure</td>  <td>Academic Calender</td> <td>NCERT</td></tr>
+       <tr><td><li>Educators</li></td> <td>Enrolment Form</td>  <td>Prizes & Rewards</td> <td>DST</td></tr>
+       <tr><td>Primary Section</td> <td>Payment Link</td>  <td>Forms</td> <td>NCTE</td></tr>
+       <tr><td><li>Students</li></td> <td>Scholarships</td>  <td></td> <td>MHRD</td></tr>
+       <tr><td><li>Educators</li></td> <td>FAQs</td>  <td></td> <td>Arvind Gupta Toys</td></tr>
+       <tr><td>Higher Section</td> <td></td>  <td></td> <td></td></tr>
+       <tr><td><li>Students</li></td> <td></td>  <td></td> <td></td></tr>
+       <tr><td><li>Educators</li></td> <td></td>  <td></td> <td></td></tr></ul>
+      </table>
+      </div>
+  </div>
+    <div class="dropdown" >
+    <span id="menu" class="sliding-middle-out">Campus</span>
+    <div class="dropdown-content">
+      <table id="tab"><ul>
+       <tr><td></td> <th>Facilities</th>  <th>Life @ APS</th></tr>
+       <tr><td>Science Lab</td> <td>24x7 Internet</td>  <td>Club & Activities</td> </tr>
+       <tr><td>Computer Lab</td> <td>Biometric Attendance</td>  <td><li>Vigyanpur</li></td> </tr>
+       <tr><td>Mathematics Lab</td> <td>RFID Cards</td>  <td><li>Sahityapur</li></td> </tr>
+       <tr><td>Audio-Visual Room</td> <td>Transport</td>  <td><li>Kalashala</li></td> </tr>
+       <tr><td>Multipurpose Library</td> <td></td>  <td><li>Dramatics & Music</li></td> </tr>
+       <tr><td></td> <td></td>  <td><li>Techwiz</li></td> </tr></ul>
+      </table>
+      </div>
+  </div>
+
+
+		<div class="dropdown" >
+	  <span id="menu" class="sliding-middle-out">Gallery</span>
+	  <div class="dropdown-content">
+    	<table id="tab">
+    	<tr><th>Happenings</th>    <th>Students' Build</th><td>Achivements</td></tr>
+    	<tr><td>Celebrations</td>    <td>Craft Works</td><td>Documentaries</td></tr>
+    	<tr><td><li>Fairs and Exhibitions</li></td> <td>Science Models</td> <td></td></tr>
+      <tr><td><li>Open Day</li></td> <td>Paintings</td> <td></td></tr>
+      <tr><td>Visits and Outings</td><td></td><td></td></tr>
+      <tr><td><li>Excursions</li></td><td></td><td></td></tr>
+      <tr><td><li>Summer Camps</li></td><td></td><td></td></tr>
+      <tr><td>Visitors</td><td></td><td></td></tr>
+    	</table>
+  	  </div>
+	</div>
+		<div class="dropdown" >
+    <span id="menu" class="sliding-middle-out">The Beginning</span>
+    <div class="dropdown-content">
+      <table id="tab">
+      <tr><th>EK PAHAL</th>    <th></th></tr>
+      <tr><td>Anwensha</td>    <td>Community Service</td></tr>
+      <tr><td>ChangeloomsWith.in</td> <td></td> </tr>
+      <tr><td>TFC</td> <td></td> </tr>
+      <tr><td>Swamanthan</td><td></td></tr>
+      <tr><td>ASLP</td><td></td></tr>
+      </table>
+      </div>
+  </div>
+
+    <div class="dropdown" >
+    <span id="menu" class="sliding-middle-out">Join Hands</span>
+    <div class="dropdown-content">
+      <table id="tab">
+      <tr><td>Volunteer</td>    </tr>
+      <tr><td>Join Us</td>    </tr>
+      <tr><td>Join Us as Educator</td> </tr>
+      <tr><td>Sponser a child</td> </tr>
+      <tr><td>Contribute</td></tr>
+      <tr><td>How to reach Us</td></tr>
+      </table>
+      </div>
+  </div>
+  </div>  
+    
+    <!-- <div class="dropdown">
+     <span id="menu">Quick Links</span>
+            <div class="dropdown-content" >
+                <table id="tab">
+                    <tr><td>Fee Structure</td>    </tr>
+                    <tr><td>Admission
+                    <ul>
+            <li>Admission Form</li>
+            <li>Payment Link</li>
+            <li>FAQs</li>
+        </ul>
+                    </td>  </tr>
+                    <tr><td>School Bus route</td></tr>
+                    <tr><td>Join Us</td>  </tr>
+                    <tr><td>Contact Us</td>  </tr>
+                </table>
+            </div> 
+        </div> -->
+   
+    <br>
+
+
+
+
+
+<div class="row"><div class="col-sm-3" style="background-color: rgb(212,202,81);margin-right: 0px">
+      <div id="card-2" style="height: 510px;margin-left: 0px;margin-right: 0px;padding-right: 25px;">
+      <div class="front" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+        <img src="newsaps.png" class="img-responsive" width="200px" style="margin:auto;"><h1 style="font-family: Viner Hand ITC;font-size: 55px;text-align: center;">NEWS</h1><br><br><br>
+      <h2 style="padding-left: 20px;padding-right: 20;font-family: Comic Sans MS;">"I think this School is best for my child."</h2>
+      <i style="text-align: right;">.....Mrs. Arpana Chawla, guardian</i>
+      </div>
+      <div class="back">
+        <marquee direction="up" scrollamount="8" onmouseover="stop()" onmouseout="start()" id="newstitle" style="background-color:white;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+          <div class="newsdiv">Effectory is the unique diary presented by us. You can order it via paytm on 9900</div><br>
+         
+           <div class="newsdiv">Effectory is the unique diary presented by us. You can order it via paytm on 9900</div><br>
+              <div class="newsdiv">Effectory is the unique diary presented by us. You can order it via paytm on 9900</div><br><div class="newsdiv">Effectory is the unique diary presented by us. You can order it via paytm on 9900</div>
+           </marquee>
+           <br><br><br><br><div style="font-family: vivaldi;background-color: white;color: blue;font-size: 24px;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);"><a href="#" style="text-decoration: none;">Vision,Mission and Motto</a></div>
+      </div> 
+    </div>
+</div>
+<div class="col-sm-9" >
+  <div id="myCarousel" class="carousel slide" data-ride="carousel">
+    <!-- Indicators -->
+    <ol class="carousel-indicators">
+      <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+      <li data-target="#myCarousel" data-slide-to="1"></li>
+      <li data-target="#myCarousel" data-slide-to="2"></li>
+      <li data-target="#myCarousel" data-slide-to="3"></li>
+      <li data-target="#myCarousel" data-slide-to="4"></li>
+      <li data-target="#myCarousel" data-slide-to="5"></li>
+    </ol>
+
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner">
+      <div class="item active">
+        <img src="scfun.jpg" alt="Science Activities class" style="width:100%; height: 480px">
+      <!--  <div class="carousel-caption" style="width:75%;color:white;font-size:1.333em;text-shadow:5px 5px 5px #41413B;">
+                                <h3>Science Laboratory</h3>
+                            </div> -->
+                            <figcaption>Science Activity showCase in the school</figcaption>
+      </div>
+
+      <div class="item">
+        <img src="rubic.jpg" alt="Chicago" style="width:100%; height: 480px">
+        <figcaption>Rubic Cube Workshop in the school</figcaption>
+      </div>
+      <div class="item">
+        <img src="campusveiw.jpg" alt="APS LOOK" style="width:100%; height: 480px">
+        <figcaption>The school</figcaption>
+      </div>
+      <div class="item">
+        <img src="assembly.jpg" alt="Morning Assembly Photo" style="width:100%; height: 480px">
+        <figcaption>Morning Assembly in the school</figcaption>
+      </div>
+      <div class="item">
+        <img src="sclab1.jpg" alt="Rubic Cube Workshop" style="width:100%; height: 480px">
+        <figcaption>Rubic Cube Workshop in the school</figcaption>
+      </div>
+    
+      <div class="item">
+          <img src="disc1.jpg" alt="Children in library" style="width:100%;height: 480px">
+      <!--  <div class="carousel-caption" >
+                                <h3 >What we Do</h3>
+                            
+      </div> -->
+        <figcaption><b>Children in Library</b></figcaption> 
+      </div>
+    </div>
+
+    <!-- Left and right controls -->
+    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+      <span class="glyphicon glyphicon-chevron-left"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#myCarousel" data-slide="next">
+      <span class="glyphicon glyphicon-chevron-right"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
+</div>
+</div><br>
+
+</div>
+<br><br>
+<div style="background-color: white;">
+  Contact Us
+</div>
+
+
+</body>
+</html>
