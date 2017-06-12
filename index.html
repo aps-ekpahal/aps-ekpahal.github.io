@@ -4,11 +4,8 @@
 	<link rel="shortcut icon" href="aps.ico">
 	<!--<link rel="icon" href="aps.png" type="image/png" /> -->
 	<title>Alliance Public School</title>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
-    <script  src="scripts/jquery-3.2.1.min.js"></script>
+    <script  src="script/jquery-3.2.1.min.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <script src="bootstrap/js/bootstrap.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
@@ -96,7 +93,7 @@
 		font-weight: bold;
     padding-left: 2px;
     padding-right: 50px; 
-
+    color: #ee9900;
 	}
 	#tab{
 		text-align: left;
@@ -106,10 +103,14 @@
     	vertical-align: center;
     	white-space: nowrap;
     overflow: hidden;
-    padding-right: 25px
-
+    padding-right: 25px;
+    padding-left:5px;
     	
 	}
+  .dropdown-content td:hover {
+    color: blue;
+    background-color: #f1f1f1;
+  }
     .drop{
         text-decoration: none;
     }
@@ -145,6 +146,7 @@
 	}*/
 	#nav{
 		text-align: center;
+    background-color: #f1f1f1;
 	}
     #news{
         border: 2px solid rgb(30,78,180);
@@ -168,7 +170,21 @@
     }
 
 </style>
+<script type="text/javascript">
+  function changeImage(){
+            document.getElementById("menu").style.padding-left="35%";
+            document.getElementById("menu").style.padding-right="35%";
+            document.getElementById("kk").style.height="35%";
+            document.getElementById("kk").style.width="35%";
+            document.getElementById("myCarousel").style.height="35%";
+            document.getElementById("myCarousel").style.width="35%";
+            document.getElementById("cd").style.height="35%";
+            document.getElementById("cd").style.width="35%";
+            return true;
+          }
+</script>
  <script type="text/javascript">
+    
     $(function(){
       
       $("#card-1").flip({
@@ -195,7 +211,7 @@
 
 
 </head>
-<body >
+<body onresize="changeImage()">
   <div class="row" id="kk" style="padding-bottom: 0px;margin-bottom: 0px;">
     <div class="container">
           <h1 class="customfont" style="text-align: center;font-size: 32px;padding-bottom: 0px;margin-bottom: 0px;padding-top: 0px;">ALLIANCE PUBLIC SCHOOL</h1>
@@ -208,8 +224,7 @@
     </div>
     </div>
 
-<div class="container">
-<div class="row" id="nav" >
+<div id="nav" >
   <div class="dropdown"  id="raj">
     <span id="menu" class="sliding-middle-out">About APS</span>
     <div class="dropdown-content">
@@ -299,18 +314,18 @@
       </div>
   </div>
   </div>  
-    
+  <div class="container">  
    
-    <br>
+    
 
 
 
 
 
-<div class="row"><div class="col-sm-3" style="background-color: rgb(212,202,81);margin-right: 0px">
+<div class="row"><div class="col-sm-3" style="background-color: rgb(212,202,81);margin-right: 0px" id="cd">
       <div id="card-2" style="height: 510px;margin-left: 0px;margin-right: 0px;padding-right: 25px;">
-      <div class="front" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
-        <img src="newsaps.png" class="img-responsive" width="200px" style="margin:auto;"><h1 style="font-family: Viner Hand ITC;font-size: 55px;text-align: center;">NEWS</h1><br><br><br>
+      <br><div class="front" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+        <img src="newsaps.png" class="img-responsive" width="200px" style="margin:auto;"><h1 style="font-family: Viner Hand ITC;font-size: 45px;text-align: center;">NEWS</h1><br><br><br>
       <h2 style="padding-left: 20px;padding-right: 20;font-family: Comic Sans MS;">"I think this School is best for my child."</h2>
       <i style="text-align: right;">.....Mrs. Arpana Chawla, guardian</i>
       </div>
