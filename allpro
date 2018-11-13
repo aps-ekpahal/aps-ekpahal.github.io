@@ -1,0 +1,1350 @@
+Array sum
+
+#include<stdio.h>
+#include<string.h>
+#include <mpi.h>
+
+int main(int argc,char *argv[])
+{
+        int my_rank;
+        int P;
+        int source;
+        int dest;
+        int tap=0;
+        int array[] = {1,5,6,7,8,9,5,8,0,5};
+        int length = sizeof(array)/sizeof(array[0]);
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&P);
+
+        if(my_rank!=0)
+        {
+                printf("Process no %d\n",my_rank);
+                int avg  =length/ (P-1);
+                dest = 0;
+                my_rank--;
+                int sum[1] ={ 0 };
+                for(int i=avg*my_rank;i<avg*(my_rank+1);i++)
+                {
+                        printf("%d sum = %d\n",i,sum[0]);
+                        sum[0] += array[i];
+                }
+                printf("Final value sent = %d\n",sum[0]);
+                MPI_Send(sum,1,MPI_INT,dest,tap,MPI_COMM_WORLD);
+        }
+        else
+        {
+                int total_sum = 0;
+                for(source=1;source<P;source++)
+                {
+                        int sum[] = {0};
+                        MPI_Recv(sum,1,MPI_INT,source,tap,MPI_COMM_WORLD,&status);
+                        printf("Value received from %d is %d \n",source,sum[0]);
+                        total_sum += sum[0];
+                }
+                int avg = length/(P-1);
+                avg*= (P-1);
+                for(int i=avg;i<length;i++)
+                total_sum+= array[i];
+                printf("Totalsum is %d\n",total_sum);
+        }
+        MPI_Finalize();
+        return 0;
+}
+
+
+
+
+Prefix Calculation
+
+#include<stdio.h>
+#include <mpi.h>
+#include<math.h>
+#include<stdlib.h>
+
+int main(int argc,char *argv[])
+{
+        int my_rank;
+        int P;
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&P);
+
+        if(my_rank!=0)
+        {
+                printf("Process no %d\n",my_rank);
+                int re[2];
+                MPI_Recv(re,2,MPI_INT,0,0,MPI_COMM_WORLD,&status);
+                int n = re[0],add=re[1];
+                int avg = n/(P-1);
+                my_rank--;
+                int temp[n],a[n];
+                MPI_Recv(a,n,MPI_INT,0,1,MPI_COMM_WORLD,&status);
+                for(int k=0;k<n;k++)
+                temp[k] = 0;
+                for(int i=avg*my_rank;i<avg*(my_rank+1);i++)
+                {
+                        if(i>=add)
+                                temp[i]+= a[i-add];
+                }
+                MPI_Send(temp,n,MPI_INT,0,0,MPI_COMM_WORLD);
+        }
+        else
+        {
+                int n,i,step,k;
+                printf("Enter the no. of elements : ");
+                putchar('\n');
+                scanf("%d",&n);
+                int a[n];
+                printf("Enter %d values : ",n);
+                putchar('\n');
+                for(i=0;i<n;i++)
+                scanf("%d",&a[i]);
+                i = log2(n);
+                int avg = n/(P-1);
+                int send[2],temp[n],temp1[n];
+                send[0] = n;
+                for(step=0;step<i;step++)
+                {
+                send[1] = 1<<step;
+                for(int l=0;l<n;l++)
+                temp1[l] = 0;
+                for(int process=1;process<P;process++)
+                {
+                        MPI_Send(send,2,MPI_INT,process,0,MPI_COMM_WORLD);
+                        MPI_Send(a,n,MPI_INT,process,1,MPI_COMM_WORLD);
+                        MPI_Recv(temp,n,MPI_INT,process,0,MPI_COMM_WORLD,&status);
+                        for(k=0;k<n;k++)
+                        temp1[k] += temp[k];
+                }
+                for(k=0;k<n;k++)
+                a[k] = temp1[k];
+                /*avg*= (P-1);
+                while(avg<length)
+                {
+                        total_sum+= func(a+avg*h);
+                        avg++;
+                }*/
+                }
+                printf("Prefix sum of given array is : ");
+                putchar('\n');
+                for(step=0;step<n;step++)
+                printf(" %d ",a[step]);
+        }
+        MPI_Finalize();
+        return 0;
+}
+
+
+Prefix Calculation
+
+
+#include<stdio.h>
+#include<string.h>
+#include<math.h>
+#include"mpi.h"
+void main(int argc,char*argv[])
+{
+        int my_rank,p,source,dest,tag1=1,tag2=2,tag3=3,tag4=4,tag5=5,tag6=6,tag7=7,tag8=8;
+        //char message[100];
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&p);
+        int a[100];
+        int n;
+        if(my_rank==0)
+        {
+                printf("enter number of elemenets: \n");
+                scanf("%d",&n);
+                int i;
+        //      printf("enter elements: ");
+                for(i=0;i<n;i++)
+                a[i]=i+1;
+                int j=2;
+                for(i=0;j<=n;)
+                {
+                        int f;
+                        for(dest=1;dest<p;dest++)
+                        {
+                                int y=1<<i;
+                                int src=dest-y;
+                                MPI_Send(&src,1,MPI_INT,dest,tag6,MPI_COMM_WORLD);
+
+                        }
+                        int x=1<<i;
+                        dest=0+x;
+                        MPI_Send(&i,1,MPI_INT,dest,tag1,MPI_COMM_WORLD);
+                        MPI_Send(a,100,MPI_INT,dest,tag4,MPI_COMM_WORLD);
+                        MPI_Recv(a,100,MPI_INT,dest,tag3,MPI_COMM_WORLD,&status);
+                        //for(dest=1;dest<p;dest++)
+                        //MPI_Recv(&f,1,dest,tag8,MPI_COMM_WORLD,&status);
+                        i++;
+                        j=1<<(i+1);
+                }
+                printf("prefix sum in process %d is %d\n",my_rank,a[0]);
+        }
+        else
+        {
+                source=0;
+                int src;
+                MPI_Recv(&src,1,MPI_INT,source,tag6,MPI_COMM_WORLD,&status);
+                if(src>=0)
+                if(src>=0)
+                {
+                source=src;
+                int i;
+                MPI_Recv(&i,1,MPI_INT,source,tag1,MPI_COMM_WORLD,&status);
+                MPI_Recv(a,100,MPI_INT,source,tag4,MPI_COMM_WORLD,&status);
+                int x=1<<i;
+                dest=my_rank+x;
+                if(dest<p)
+                {
+                        MPI_Send(&i,1,MPI_INT,dest,tag2,MPI_COMM_WORLD);
+                        MPI_Send(a,100,MPI_INT,dest,tag5,MPI_COMM_WORLD);
+                        MPI_Recv(a,100,MPI_INT,dest,tag7,MPI_COMM_WORLD,&status);
+                }
+                a[my_rank]+=a[source];
+                int j=1<<(i+1);
+                if(j==p)
+                {
+                        printf("prefix sum in process %d is %d\n",my_rank,a[my_rank]);
+                }
+                MPI_Send(a,100,MPI_INT,source,tag3,MPI_COMM_WORLD);
+                }
+        }
+        MPI_Finalize();
+}
+
+
+
+
+Simpson
+
+#include<stdio.h>
+#include<string.h>
+#include <mpi.h>
+
+float func(float x)
+{
+return x*x+x+1;
+}
+
+int main(int argc,char *argv[])
+{
+        int my_rank;
+        int P;
+        int source;
+        int dest;
+        int tap=0;
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&P);
+
+        if(my_rank!=0)
+        {
+                //printf("Process no %d\n",my_rank);
+                float r[3];
+                MPI_Recv(r,3,MPI_FLOAT,0,1,MPI_COMM_WORLD,&status);
+                float a=r[0],b=r[1];
+                int length = (int)r[2];
+                int avg  = length/ (P-1);
+                float h = (b-a)/length ;
+                dest = 0;
+                my_rank--;
+                float sum[1] ={ 0 };
+                for(int i=avg*my_rank;i<avg*(my_rank+1);i++)
+                {
+                        //printf("%d sum = %d\n",i,sum[0]);
+                        float temp = func(a+i*h);
+                        if(i&1)  sum[0] += 4*temp;
+                        else sum[0] += 2*temp;
+                }
+                //printf("Contribution of process %d is %f\n",(my_rank+1),sum[0]);
+                MPI_Send(sum,1,MPI_FLOAT,dest,tap,MPI_COMM_WORLD);
+        }
+        else
+        {
+                float tosend[3],a,b;
+                printf("Enter the value of a ,b and n :  ");
+                putchar('\n');
+                scanf("%f %f %f",&tosend[0],&tosend[1],&tosend[2]);
+                a = tosend[0];
+                b = tosend[1];
+                int length = (int)tosend[2];
+                float total_sum = 0,h=(b-a)/length;
+                for(source=1;source<P;source++)
+                {
+                        float sum[] = {0};
+                        MPI_Send(tosend,3,MPI_FLOAT,source,1,MPI_COMM_WORLD);
+                        MPI_Recv(sum,1,MPI_FLOAT,source,tap,MPI_COMM_WORLD,&status);
+                        printf("Value received from %d is %f \n",source,(h/3)*sum[0]);
+                        total_sum += sum[0];
+                }
+                int avg = length/(P-1);
+                avg*= (P-1);
+                for(int i=avg;i<=length;i++)
+                {
+                        if(i&1)         total_sum+= 4*func(a+i*h);
+                        else total_sum += 2*func(a+i*h);
+                }
+                total_sum -= (func(a)+func(b))/2;
+                total_sum *= (h/3);
+                printf("Totalsum is %f\n",total_sum);
+        }
+        MPI_Finalize();
+        return 0;
+}
+
+
+
+
+
+
+Masking 
+
+#include <stdio.h>
+#include <string.h>
+#include "mpi.h"
+
+
+int temp[1000],a[1000],n;
+int block,count,lastval;
+
+
+int min(int x,int y){
+return ((x>y)?y:x);
+}
+
+int main(int argc,char *argv[]){
+        int my_rank;
+        int p;
+        int source;
+        int dest;
+        int tag=0;
+        int sum=0;
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&p);
+        int block;
+        int count;
+        int lastval;
+        if(my_rank != 0){
+                MPI_Recv(&block,1,MPI_INT,0,tag,MPI_COMM_WORLD,&status);
+                MPI_Recv(&n,1,MPI_INT,0,tag,MPI_COMM_WORLD,&status);
+                MPI_Recv(&a,n,MPI_INT,0,tag,MPI_COMM_WORLD,&status);
+                MPI_Recv(&count,1,MPI_INT,0,tag,MPI_COMM_WORLD,&status);
+                MPI_Recv(&lastval,1,MPI_INT,0,tag,MPI_COMM_WORLD,&status);
+                printf("The value of x is %d initially \n",lastval);
+                int d=0;
+                int temp[n];
+                for(int i=0;i<n;i++)
+                        temp[i]=a[i];
+                for(int i=0;i<count;i++){
+                        for(int j=my_rank*block;j<min(n,(my_rank+1)*block);j++){
+                                if(j&(1<<i)){
+                                        temp[j]=temp[j]*lastval;
+                                        printf("Value of element %d is now %d\n",j,temp[j]);
+                                }
+                        }
+                        lastval*=lastval;
+                        printf("X is updated to %d\n",lastval);
+                }
+                dest=0;
+                temp[n-1]=0;
+                for(int i=my_rank*block;i<min(n,(my_rank+1)*block);i++){
+                        d+=temp[i];
+                }
+                MPI_Send(&d,1,MPI_INT,dest,tag,MPI_COMM_WORLD);
+        }else {
+                printf("Enter the Array Size\n");
+                scanf("%d",&n);
+                if(!(n && !(n&(n-1)))){
+                        printf("Size should be a power of 2\n");
+                        MPI_Abort(MPI_COMM_WORLD,255);
+                }
+                printf("Enter the Array Element\n");
+                for(int i=0;i<n;i++)
+                        scanf("%d",&a[i]);
+                count=0;
+                int i=n;
+                while(i){
+                        count++;
+                        i=i>>1;
+                }
+                count--;
+                printf("The value of log is %d\n",count);
+                block=((n%p==0)?n/p:n/p+1);
+                int d=0;
+                int temp[n];
+                for(int i=0;i<n;i++)
+                        temp[i]=a[i];
+                lastval = a[n-1];
+                for(int j=0;j<count;j++){
+                        for(int i=0;i<min(n,block);i++){
+                                if(i&(1<<j))
+                                temp[i]=temp[i]*lastval;
+                        }
+                        lastval*=lastval;
+                }
+                for(int i=0;i<min(n,block);i++)
+                        d+=temp[i];
+                lastval=a[n-1];
+                printf("The value of x is %d\n",lastval);
+                for(source=1;source<p;source++){
+                        MPI_Send(&block,1,MPI_INT,source,tag,MPI_COMM_WORLD);
+                        MPI_Send(&n,1,MPI_INT,source,tag,MPI_COMM_WORLD);
+                        MPI_Send(&a,n,MPI_INT,source,tag,MPI_COMM_WORLD);
+                        MPI_Send(&count,1,MPI_INT,source,tag,MPI_COMM_WORLD);
+                        MPI_Send(&lastval,1,MPI_INT,source,tag,MPI_COMM_WORLD);
+                        MPI_Recv(&sum,1,MPI_INT,source,tag,MPI_COMM_WORLD,&status);
+                        d+=sum;
+                }
+                printf("The polynomial sum is: %d\n",d);
+        }
+        MPI_Finalize();
+        return 0;
+}
+
+
+Polynomial using Masking
+
+#include<stdio.h>
+#include<string.h>
+#include"mpi.h"
+#include<math.h>
+
+int routingFn(int j, int i){
+        return j+pow(2,i);
+}
+
+int routingFn2(int j){
+        int t;
+        t = j>>2;
+        j = (j<<1);
+        j = (j%8)|t;
+        return j;
+}
+
+
+void main(int argc, char* argv[]){
+        int my_rank,p,source,dest,tag=0;
+        int tag2=1;
+        MPI_Status status;
+        MPI_Init(&argc, &argv);
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &p);
+        int n;
+        int my_value;
+        int my_step;
+        int total_step = log2(p);
+        int x=1;
+        if(my_rank==0){
+                my_step=0;
+                int arr[] = {1,1,1,1,1,1,1,1};
+                int mask[] = {0,1,0,1,0,1,0,1};
+                int mask_n[] = {0,0,0,0,0,0,0,0};
+                my_value=arr[0];
+                int i;
+                for(my_step=0;my_step<total_step;my_step++){
+                        for(i=1;i<p;i++){
+                                int t=arr[i];
+                                int m=mask[i];
+                                MPI_Send(&t, 1, MPI_INT,i,tag,MPI_COMM_WORLD);
+                                MPI_Send(&m, 1, MPI_INT,i,tag+1,MPI_COMM_WORLD);
+                        }
+
+                        if(mask[my_rank]){
+                                arr[0] *= x;
+                        }
+                        for(i=1;i<p;i++){
+                                int y;
+                                MPI_Recv(&y,1,MPI_INT,i,tag+2,MPI_COMM_WORLD,&status);
+                                arr[i] = y;
+                        }
+
+                        for(i=0;i<p;i++){
+                                int t=routingFn2(i);
+                                mask_n[t]=mask[i];
+                        }
+                        for(i=0;i<p;i++){
+                                mask[i]=mask_n[i];
+                                printf("%d ",mask[i]);
+                        }
+                        printf("\n");
+                }
+                my_value = arr[0];
+
+                for(my_step=0;my_step<total_step;my_step++){
+                        for(i=1;i<p;i++){
+                                int t = arr[i];
+                                MPI_Send(&t, 1, MPI_INT,i,tag,MPI_COMM_WORLD);
+                                MPI_Send(&my_step,1,MPI_INT,i,tag+1,MPI_COMM_WORLD);
+                        }
+
+                        int ns;
+                        ns = routingFn(my_rank,my_step);
+                        int k = arr[my_rank];
+                        MPI_Send(&k, 1, MPI_INT,ns,tag+3,MPI_COMM_WORLD);
+                        for(i=1;i<p;i++){
+                                int y;
+                                MPI_Recv(&y,1,MPI_INT,i,tag+2,MPI_COMM_WORLD,&status);
+
+                                arr[i] = y;
+                        }
+                }
+                for(i=0;i<p-1;i++){
+                        printf("Result for P[%d] : %d\n",i,arr[i]);
+                }
+        }
+        else{
+                int j;
+                for(j=0;j<total_step;j++){
+                        source = 0;
+                        MPI_Recv(&my_value,1,MPI_INT,source,tag,MPI_COMM_WORLD,&status);
+                        MPI_Recv(&my_step,1,MPI_INT,source,tag+1,MPI_COMM_WORLD,&status);
+                        if(my_step){
+                                my_value*=x;
+                        }
+                        MPI_Send(&my_value,1,MPI_INT,source,tag+2,MPI_COMM_WORLD);
+                        x*=x;
+                }
+
+                for(j=0;j<total_step;j++){
+                        source = 0;
+                        MPI_Recv(&my_value,1,MPI_INT,source,tag,MPI_COMM_WORLD,&status);
+                        MPI_Recv(&my_step,1,MPI_INT,source,tag+1,MPI_COMM_WORLD,&status);
+                        int ns;
+                        if(my_rank%2==0){
+                                ns = routingFn(my_rank,my_step);
+                                if(ns<8){
+                                        MPI_Send(&my_value, 1, MPI_INT,ns,tag+3,MPI_COMM_WORLD);
+                                }
+                                int incoming;
+                                int incomingP = my_rank - pow(2,my_step);
+                                if(my_rank>=pow(2,my_step)){
+                                        MPI_Recv(&incoming, 1, MPI_INT,incomingP,tag+3,MPI_COMM_WORLD,&status);
+                                }
+
+                                my_value += incoming;
+
+                                MPI_Send(&my_value, 1, MPI_INT,source,tag+2,MPI_COMM_WORLD);
+                        }
+                        else{
+                                ns = routingFn(my_rank,my_step);
+                                int incoming;
+                                int incomingP = my_rank - pow(2,my_step);
+                                if(my_rank>=pow(2,my_step)){
+                                        MPI_Recv(&incoming, 1, MPI_INT,incomingP,tag+3,MPI_COMM_WORLD,&status);
+                                }
+                                if(ns<8){
+                                        MPI_Send(&my_value, 1, MPI_INT,ns,tag+3,MPI_COMM_WORLD);
+                                }
+                                my_value += incoming;
+
+                                MPI_Send(&my_value, 1, MPI_INT,source,tag+2,MPI_COMM_WORLD);
+                        }
+                }
+
+        }
+
+        MPI_Finalize();
+
+}
+
+
+
+
+
+
+Interpolation to calculate function [Laplace]
+
+#include<stdio.h>
+#include<string.h>
+#include <mpi.h>
+float a[100],b[100],X;
+int n;
+
+float f(int i)
+{
+        float res=1;
+        for(int j=0;j<n;j++)
+        {
+                if(i!=j)
+                res = res*(X-a[j])/(a[i]-a[j]);
+        }
+        return res;
+}
+
+int main(int argc,char *argv[])
+{
+        int my_rank;
+        int P;
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&P);
+
+        if(my_rank!=0)
+        {
+                int avg[2];
+                float temp[1];
+                MPI_Recv(temp,1,MPI_FLOAT,0,4,MPI_COMM_WORLD,&status);
+                X = temp[0];
+                MPI_Recv(avg,2,MPI_INT,0,3,MPI_COMM_WORLD,&status);
+                n = avg[1];
+                MPI_Recv(a,100,MPI_FLOAT,0,0,MPI_COMM_WORLD,&status);
+                MPI_Recv(b,100,MPI_FLOAT,0,1,MPI_COMM_WORLD,&status);
+
+                float sum[1] ={ 0 };
+                for(int i=(my_rank-1)*avg[0] ;i<my_rank*avg[0];i++)
+                {
+                        sum[0] += f(i) * b[i] ;
+                }
+                printf("Process %d's partial sum is %f",my_rank,sum[0]);
+                putchar('\n');
+                MPI_Send(sum,1,MPI_FLOAT,0,0,MPI_COMM_WORLD);
+        }
+        else
+        {
+                printf("Enter  the number of points : ");
+                putchar('\n');
+                scanf("%d",&n) ;
+
+                printf("Enter values of x : ");
+                putchar('\n');
+                for(int i=0;i<n;i++)
+                scanf("%f",&a[i]);
+
+                printf("Enter values of y : ");
+                putchar('\n');
+                for(int i=0;i<n;i++)
+                scanf("%f",&b[i]) ;
+
+                printf("Enter the value of X :");
+                putchar('\n');
+                scanf("%f",&X);
+
+                float total_sum = 0;
+                int avg = n/(P-1) ;
+                for(int process=1;process<P;process++)
+                {
+                        float  res[1] ;
+                        int q[2];
+                        q[0] = avg;
+                        q[1] = n;
+                        res[0] = X;
+                        MPI_Send(res,1,MPI_FLOAT,process,4,MPI_COMM_WORLD);
+                        MPI_Send(q,2,MPI_INT,process,3,MPI_COMM_WORLD);
+                        MPI_Send(a,n,MPI_FLOAT,process,0,MPI_COMM_WORLD);
+                        MPI_Send(b,n,MPI_FLOAT,process,1,MPI_COMM_WORLD);
+                        MPI_Recv(res,1,MPI_FLOAT,process,0,MPI_COMM_WORLD,&status);
+
+                        total_sum += res[0] ;
+                }
+                avg*=(P-1);
+                while(avg<n)
+                {
+                        total_sum += f(avg) * b[avg] ;
+                        avg++;
+                }
+                printf("f(x) =  %f\n",total_sum);
+                putchar('\n');
+        }
+        MPI_Finalize();
+        return 0;
+}
+
+
+Interpolation to calculate function f(x) [Laplaze]
+
+#include<stdio.h>
+#include<string.h>
+#include"mpi.h"
+void main(int argc,char*argv[])
+{
+        int my_rank,p,source,dest,tag1=1,tag2=2,tag3=3,tag4=4,tag5=5,tag6=6,tag7=7;
+        //char message[100];
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&p);
+        float a[100];
+        float b[100];
+        int n;
+        if(my_rank==0)
+        {
+                printf("enter number of elemenets: \n");
+                scanf("%d",&n);
+                int i;
+        //      printf("enter elements: ");
+                for(i=0;i<n;i++)
+                {
+                        a[i]=i+1;
+                        b[i]=(n/2)-i;
+                        printf("%f,%f\n",a[i],b[i]);
+                }
+                float x;
+                printf("enter value of x:\n");
+                scanf("%f",&x);
+                int c=n/p;
+                int rem=n-(c*(p-1));
+                float msum=0.0;
+                int j;
+                for(i=0;i<rem;i++)
+                {
+                        float z=1.0;
+                        for(j=0;j<n;j++)
+                        {
+                                if(j!=i)
+                                {
+                                        z=(float)z*((x-a[j])/(a[i]-a[j]));
+                                }
+                        }
+                        msum=msum+z*b[i];
+                }
+                for(dest=1;dest<p;dest++)
+                {
+                        //int b[20];
+                        i=rem;
+                        //for(i=rem;i<rem+c;i++)
+                        //b[k++]=a[i];
+                        rem=rem+c;
+                        MPI_Send(&i,1,MPI_INT,dest,tag1,MPI_COMM_WORLD);
+                        MPI_Send(&c,1,MPI_INT,dest,tag2,MPI_COMM_WORLD);
+                        MPI_Send(&x,1,MPI_FLOAT,dest,tag5,MPI_COMM_WORLD);
+                        MPI_Send(a,100,MPI_FLOAT,dest,tag4,MPI_COMM_WORLD);
+                        MPI_Send(b,100,MPI_FLOAT,dest,tag6,MPI_COMM_WORLD);
+                        MPI_Send(&n,1,MPI_INT,dest,tag7,MPI_COMM_WORLD);
+                        float y;
+                        MPI_Recv(&y,1,MPI_FLOAT,dest,tag3,MPI_COMM_WORLD,&status);
+                        msum+=y;
+                }
+                printf("function value is %f\n",msum);
+        }
+        else
+        {
+                source=0;
+                //int rec[100];
+                int i,c,n;
+                float x;
+                MPI_Recv(&i,1,MPI_INT,source,tag1,MPI_COMM_WORLD,&status);
+                MPI_Recv(&c,1,MPI_INT,source,tag2,MPI_COMM_WORLD,&status);
+                MPI_Recv(&x,1,MPI_FLOAT,source,tag5,MPI_COMM_WORLD,&status);
+                MPI_Recv(a,100,MPI_FLOAT,source,tag4,MPI_COMM_WORLD,&status);
+                MPI_Recv(b,100,MPI_FLOAT,source,tag6,MPI_COMM_WORLD,&status);
+                MPI_Recv(&n,1,MPI_INT,source,tag7,MPI_COMM_WORLD,&status);
+                int j,k;
+                float ssum=0.0;
+                for(k=i;k<i+c;k++)
+                {
+                        float z=1.0;
+                        for(j=0;j<n;j++)
+                        {
+                                if(k!=j)
+                                {
+                                        z=(float)z*((x-a[j])/(a[k]-a[j]));
+                                }
+                        }
+                        ssum+=z*b[k];
+                }
+                MPI_Send(&ssum,1,MPI_FLOAT,source,tag3,MPI_COMM_WORLD);
+
+        }
+        MPI_Finalize();
+}
+
+
+
+
+
+Integration
+
+#include<stdio.h>
+#include<string.h>
+#include <mpi.h>
+
+float func(float x)
+{
+return x*x;
+}
+
+int main(int argc,char *argv[])
+{
+        int my_rank;
+        int P;
+        int source;
+        int dest;
+        int tap=0;
+        float a = 0,b=10;
+        int length = 100;
+        float h = (b-a)/length;
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&P);
+
+        if(my_rank!=0)
+        {
+                int avg  =length/ (P-1);
+                dest = 0;
+                my_rank--;
+                float sum[1] ={ 0 };
+                for(int i=avg*my_rank;i<avg*(my_rank+1);i++)
+                {
+                        sum[0] += func(a+i*h);
+                }
+                MPI_Send(sum,1,MPI_FLOAT,dest,tap,MPI_COMM_WORLD);
+        }
+        else
+        {
+                float total_sum = 0;
+                for(source=1;source<P;source++)
+                {
+                        float sum[] = {0};
+                        MPI_Recv(sum,1,MPI_FLOAT,source,tap,MPI_COMM_WORLD,&status);
+                        total_sum += sum[0];
+                }
+                int avg = length/(P-1);
+                avg*= (P-1);
+                for(int i=avg;i<length;i++)
+                total_sum+= func(a+i*h);
+                total_sum -= (func(a)+func(b))/2;
+                total_sum *= h;
+                printf("Totalsum is %f\n",total_sum);
+        }
+        MPI_Finalize();
+        return 0;
+}
+
+
+
+
+
+Matrix Matrix multiplication part 2
+
+
+#include<stdio.h>
+#include<string.h>
+#include <mpi.h>
+#include<math.h>
+
+int main(int argc,char *argv[])
+{
+        int my_rank;
+        int P;
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&P);
+        if(my_rank!=0)
+        {
+                int n = sqrt(P);
+                int a[n], b[n];
+                MPI_Recv(a,n,MPI_INT,0,1,MPI_COMM_WORLD,&status);
+                MPI_Recv(b,n,MPI_INT,0,2,MPI_COMM_WORLD,&status);
+
+                int sum[1] ={ 0 };
+                for(int i=0 ;i<n;i++)
+                        sum[0] += a[i] * b[i] ;
+                printf("Process %d's partial sum is %d",my_rank,sum[0]);
+                putchar('\n');
+                MPI_Send(sum,1,MPI_INT,0,0,MPI_COMM_WORLD);
+        }
+        else
+        {
+                int n = sqrt(P);
+                int m1[n][n], m2[n][n],res[n][n];
+                printf("Enter Matrix 1(%d X %d) : ",n,n);
+                putchar('\n');
+
+                for(int i=0;i<n;i++)
+                        for(int j=0;j<n;j++)
+                                scanf("%d",&m1[i][j]);
+
+                printf("Enter Matrix 2 (%d X %d): ",n,n);
+                putchar('\n');
+
+                for(int j=0;j<n;j++)
+                        for(int i=0;i<n;i++)
+                                scanf("%d",&m2[i][j]) ;
+
+                for(int process=0;process<n*n;process++)
+                {
+                        int i = process/n;
+                        int j = process%n;
+                        MPI_Send(m1[i],n,MPI_INT,process+1,1,MPI_COMM_WORLD);
+                        MPI_Send(m2[j],n,MPI_INT,process+1,2,MPI_COMM_WORLD);
+                        MPI_Recv(&res[i][j],1,MPI_INT,process+1,0,MPI_COMM_WORLD,&status);
+                        //res[i][j] = xx[0] ;
+                }
+                printf("Result : \n");
+                for(int i=0;i<n;i++)
+                {
+                        for(int j=0;j<n;j++)
+                                printf(" %5d ",res[i][j]);
+                putchar('\n');
+                }
+        }
+        MPI_Finalize();
+        return 0;
+}
+
+
+
+
+
+ Program for matrix multiplication 
+
+ #include<stdio.h>
+#include<string.h>
+#include <mpi.h>
+int main(int argc,char *argv[])
+{
+        int my_rank;
+        int P;
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&P);
+        if(my_rank!=0)
+        {
+                int a[100], b[100];
+                MPI_Recv(a,P-1,MPI_INT,0,3,MPI_COMM_WORLD,&status);
+                MPI_Recv(b,P-1,MPI_INT,0,0,MPI_COMM_WORLD,&status);
+                int sum=0;
+                for(int i=0 ;i<P-1;i++)
+                {
+                        sum += a[i] * b[i] ;
+                }
+                MPI_Send(&sum,1,MPI_INT,0,0,MPI_COMM_WORLD);
+        }
+        else
+        {
+                printf("Enter  the dimesions of matrix : ");
+                putchar('\n');
+                int n,m;
+                scanf("%d %d",&n,&m);
+                printf("Enter Matrix 1 : ");
+                putchar('\n');
+                int a[100][100],r[100],b[100];
+                for(int i=0;i<n;i++)
+                {
+                        for(int j=0;j<m;j++)
+                        {
+                                scanf("%d",&a[i][j]);
+                        }
+                }
+                printf("Enter Matrix 2 : ");
+                putchar('\n');
+                for(int i=0;i<m;i++)
+                {
+                        scanf("%d",&b[i]) ;
+                        r[i]=0;
+                }
+                for(int process=1;process<P;process++)
+                {
+                        MPI_Send(a[process-1],m,MPI_INT,process,3,MPI_COMM_WORLD);
+                        MPI_Send(b,m,MPI_INT,process,0,MPI_COMM_WORLD);
+                        int res;
+                        MPI_Recv(&res,1,MPI_INT,process,0,MPI_COMM_WORLD,&status);
+                        r[process-1] += res ;
+                }
+                printf("Product of Matrix is\n");
+                for(int i=0;i<n;i++)
+                {
+                        printf("%d",r[i]);
+                        putchar('\n');
+                }
+        }
+        MPI_Finalize();
+        return 0;
+}
+
+
+
+
+
+ Program for dot product of 2 vectors   
+
+
+#include<stdio.h>
+#include<string.h>
+#include"mpi.h"
+void main(int argc,char*argv[])
+{
+        int my_rank,p,source,dest,tag1=1,tag2=2,tag3=3,tag4=4,tag5=5;
+        //char message[100];
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&p);
+        int a[100];
+        int b[100];
+        int n;
+        if(my_rank==0)
+        {
+                printf("enter dimension: \n");
+                scanf("%d",&n);
+                int i;
+        //      printf("enter elements: ");
+                for(i=0;i<n;i++)
+                {
+                        a[i]=i+1;
+                        b[i]=i+1;
+                }
+                int c=n/p;
+                int rem=n-(c*(p-1));
+                int msum=0;
+                for(i=0;i<rem;i++)
+                msum=msum+a[i]*b[i];
+                for(dest=1;dest<p;dest++)
+                {
+                        int k=0;
+                        //int b[20];
+                        i=rem;
+                        //for(i=rem;i<rem+c;i++)
+                        //b[k++]=a[i];
+
+                        rem=rem+c;
+                        MPI_Send(&i,1,MPI_INT,dest,tag1,MPI_COMM_WORLD);
+                        MPI_Send(&c,1,MPI_INT,dest,tag2,MPI_COMM_WORLD);
+                        MPI_Send(a,100,MPI_INT,dest,tag4,MPI_COMM_WORLD);
+                        MPI_Send(b,100,MPI_INT,dest,tag5,MPI_COMM_WORLD);
+                        int x;
+                        MPI_Recv(&x,1,MPI_INT,dest,tag3,MPI_COMM_WORLD,&status);
+                        msum+=x;
+                }
+                printf("total sum is %d\n",msum);
+        }
+        else
+        {
+                source=0;
+                //int rec[100];
+                int i,c;
+                MPI_Recv(&i,1,MPI_INT,source,tag1,MPI_COMM_WORLD,&status);
+                MPI_Recv(&c,1,MPI_INT,source,tag2,MPI_COMM_WORLD,&status);
+                MPI_Recv(a,100,MPI_INT,source,tag4,MPI_COMM_WORLD,&status);
+                MPI_Recv(b,100,MPI_INT,source,tag5,MPI_COMM_WORLD,&status);
+                int j;
+                int ssum=0;
+                for(j=i;j<i+c;j++)
+                ssum+=a[j]*b[j];
+                MPI_Send(&ssum,1,MPI_INT,source,tag3,MPI_COMM_WORLD);
+
+        }
+        MPI_Finalize();
+}
+
+
+
+
+
+
+
+
+
+
+                x1y1+x2y2+....
+
+// Program for dot product of 2 vectors
+
+#include<stdio.h>
+#include<string.h>
+#include <mpi.h>
+int main(int argc,char *argv[])
+{
+        int my_rank;
+        int P;
+        MPI_Status status;
+        MPI_Init(&argc,&argv);
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&P);
+
+        if(my_rank!=0)
+        {
+                int a[100], b[100],avg[1];
+                MPI_Recv(avg,1,MPI_INT,0,3,MPI_COMM_WORLD,&status);
+                MPI_Recv(a,100,MPI_INT,0,0,MPI_COMM_WORLD,&status);
+                MPI_Recv(b,100,MPI_INT,0,1,MPI_COMM_WORLD,&status);
+
+                int sum[1] ={ 0 };
+                for(int i=0 ;i<avg[0];i++)
+                {
+                        sum[0] += a[i] * b[i] ;
+                }
+                printf("Process %d's partial sum is %d",my_rank,sum[0]);
+                putchar('\n');
+                MPI_Send(sum,1,MPI_INT,0,0,MPI_COMM_WORLD);
+        }
+        else
+        {
+                printf("Enter  the dimesions of vector : ");
+                putchar('\n');
+                int n;
+                scanf("%d",&n) ;
+
+                printf("Enter vector 1 : ");
+                putchar('\n');
+                int a[n],b[n];
+
+                for(int i=0;i<n;i++)
+                scanf("%d",&a[i]);
+
+                printf("Enter vector 2 : ");
+                putchar('\n');
+                for(int i=0;i<n;i++)
+                scanf("%d",&b[i]) ;
+
+                int total_sum = 0;
+                int avg = n/(P-1) ;
+                for(int process=1;process<P;process++)
+                {
+                        int  tempa[avg];
+                        int  tempb[avg];
+                        int  res[1] ;
+                        for(int i=(process-1)*avg;i<process*avg;i++)
+                        {
+                                tempa[i-(process-1)*avg] = a[i];
+                                tempb[i-(process-1)*avg] = b[i];
+                        }
+                        int q[1];
+                        q[0] = avg;
+                        MPI_Send(q,1,MPI_INT,process,3,MPI_COMM_WORLD);
+                        MPI_Send(tempa,avg,MPI_INT,process,0,MPI_COMM_WORLD);
+                        MPI_Send(tempb,avg,MPI_INT,process,1,MPI_COMM_WORLD);
+                        MPI_Recv(res,1,MPI_INT,process,0,MPI_COMM_WORLD,&status);
+
+                        total_sum += res[0] ;
+                }
+                avg*=(P-1);
+                while(avg<n)
+                {
+                        total_sum += a[avg] * b[avg] ;
+                        avg++;
+                }
+                printf("Dot product  is %d\n",total_sum);
+                putchar('\n');
+        }
+        MPI_Finalize();
+        return 0;
+}
+
+
+
+
+
+Odd Even Transposition sorting
+
+#include<stdio.h>
+#include<string.h>
+#include "mpi.h"
+
+void main(int argc, char* argv[] )
+{
+        int my_rank,p,a[100],source,dest;
+        int tag=0;
+        MPI_Status status;
+        MPI_Init(&argc, &argv);
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &p);
+        if(my_rank!=0)
+        {
+                int x,z;
+                MPI_Recv(&x,1,MPI_INT,0,tag, MPI_COMM_WORLD, &status);
+                int j;
+                int k=(p-1)/2;
+                if((p-1)%2!=0)
+                k++;
+                for(j=1;j<=k;j++)
+                {
+                        if(my_rank+1<p && my_rank%2==1)
+                        {
+                                MPI_Send(&x,1,MPI_INT,my_rank+1,tag,MPI_COMM_WORLD);
+                                MPI_Recv(&x,1,MPI_INT,my_rank+1,tag,MPI_COMM_WORLD,&status);
+                        }
+                        if(my_rank-1>=1 && my_rank%2==0)
+                        {
+                                MPI_Recv(&z,1,MPI_INT,my_rank-1,tag,MPI_COMM_WORLD,&status);
+                                if(z>x)
+                                {
+                                        int temp=z;
+                                        z=x;
+                                        x=temp;
+                                }
+                                MPI_Send(&z,1,MPI_INT,my_rank-1,tag,MPI_COMM_WORLD);
+                        }
+                        if(my_rank+1<p && my_rank%2==0)
+                        {
+                                MPI_Send(&x,1,MPI_INT,my_rank+1,tag,MPI_COMM_WORLD);
+                                MPI_Recv(&x,1,MPI_INT,my_rank+1,tag,MPI_COMM_WORLD,&status);
+                        }
+                        if(my_rank-1>=1 && my_rank%2==1)
+                        {
+                                MPI_Recv(&z,1,MPI_INT,my_rank-1,tag,MPI_COMM_WORLD,&status);
+                                if(z>x)
+                                {
+                                        int temp=z;
+                                        z=x;
+                                        x=temp;
+
+                                }
+                                MPI_Send(&z,1,MPI_INT,my_rank-1,tag,MPI_COMM_WORLD);
+                        }
+                }
+                MPI_Send(&x,1,MPI_INT,0,tag,MPI_COMM_WORLD);
+        }
+        else
+        {
+                int n;
+                printf("Enter total elements: \n");
+                scanf("%d",&n);
+                int i;
+                for(i=0;i<n;i++)
+                        scanf("%d",&a[i]);
+                for(i=0;i<n;i++)
+                {
+                        int b=a[i];
+                        MPI_Send(&b,1,MPI_INT,i+1,tag,MPI_COMM_WORLD);
+                }
+                for(source=1;source<p;source++)
+                {
+                        int x;
+                        MPI_Recv(&x,1,MPI_INT,source,tag,MPI_COMM_WORLD,&status);
+                        a[source-1]=x;
+                        printf("Message from process %d element = %d\n",source-1,x);
+                }
+        }
+        MPI_Finalize();
+}
+
+
+
+
+
+
+// Wrap around Matrix Multiplication
+
+#include<stdio.h>
+#include<string.h>
+#include<math.h>
+#include "mpi.h"
+
+void main(int argc, char* argv[] )
+{
+        int my_rank,p,a[100][100],b[100][100],source,dest;
+        int tag=0;
+        MPI_Status status;
+        MPI_Init(&argc, &argv);
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &p);
+        if(my_rank!=0)
+        {
+                int x,y,z,x1,y1,z1;
+                MPI_Recv(&x,1,MPI_INT,0,tag, MPI_COMM_WORLD, &status);
+                MPI_Recv(&y,1,MPI_INT,0,tag, MPI_COMM_WORLD, &status);
+                MPI_Recv(&z,1,MPI_INT,0,tag, MPI_COMM_WORLD, &status);
+                int n=sqrt(p-1);
+                int k;
+                int i=(my_rank/n)+1;
+                if(my_rank%n==0)
+                i--;
+                int j=(my_rank%n);
+                if(my_rank%n==0)
+                j=n;
+                for(k=1;k<=n-1;k++)
+                {
+
+                        if(i>k)
+                        {
+                                int dest=my_rank-1;
+                                if(dest%n==0)
+                                dest=dest+n;
+                                int source=my_rank+1;
+                                if(source%n==1)
+                                source=source-n;
+                                MPI_Send(&x,1,MPI_INT,dest,tag,MPI_COMM_WORLD);
+                                MPI_Recv(&x,1,MPI_INT,source,tag,MPI_COMM_WORLD,&status);
+                        }
+                        if(j>k)
+                        {
+                                int dest=my_rank-n;
+                                if(dest<=0)
+                                dest=dest+n*n;
+                                int source=my_rank+n;
+                                if(source>n*n)
+                                source=source-n*n;
+                                MPI_Send(&y,1,MPI_INT,dest,tag,MPI_COMM_WORLD);
+                                MPI_Recv(&y,1,MPI_INT,source,tag,MPI_COMM_WORLD,&status);
+                        }
+                }
+                for(k=1;k<=n;k++)
+                {
+                        z=z+x*y;
+                        int dest=my_rank-1;
+                        if(dest%n==0)
+                        dest=dest+n;
+                        int source=my_rank+1;
+                        if(source%n==1)
+                        source=source-n;
+                        MPI_Send(&x,1,MPI_INT,dest,tag,MPI_COMM_WORLD);
+                        MPI_Recv(&x,1,MPI_INT,source,tag,MPI_COMM_WORLD,&status);
+
+                        dest=my_rank-n;
+                        if(dest<=0)
+                        dest=dest+n*n;
+                        source=my_rank+n;
+                        if(source>n*n)
+                        source=source-n*n;
+                        MPI_Send(&y,1,MPI_INT,dest,tag,MPI_COMM_WORLD);
+                        MPI_Recv(&y,1,MPI_INT,source,tag,MPI_COMM_WORLD,&status);
+
+                }
+                MPI_Send(&z,1,MPI_INT,0,tag,MPI_COMM_WORLD);
+        }
+        else
+        {
+                int n;
+                printf("Enter dimension of matrix: \n");
+                scanf("%d",&n);
+                int i,j;
+                int count=0;
+                for(i=0;i<n;i++)
+                {
+                        for(j=0;j<n;j++)
+                        {
+                                count++;
+                                if(j==i)
+                                a[i][j]=1;
+                                else
+                                a[i][j]=0;
+
+                                b[i][j]=2;
+                                int x=a[i][j];
+                                int y=b[i][j];
+                                int z=0;
+                                MPI_Send(&x,1,MPI_INT,count,tag,MPI_COMM_WORLD);
+                                MPI_Send(&y,1,MPI_INT,count,tag,MPI_COMM_WORLD);
+                                MPI_Send(&z,1,MPI_INT,count,tag,MPI_COMM_WORLD);
+                        }
+                }
+                int c[100][100];
+                for(i=1;i<=n;i++)
+                {
+                        for(j=1;j<=n;j++)
+                        {
+                                int source=(i-1)*n+j;
+                                int x;
+                                MPI_Recv(&x,1,MPI_INT,source,tag,MPI_COMM_WORLD,&status);
+                                c[i-1][j-1]=x;
+                                printf("%d ",x);
+                        }
+                        printf("\n");
+                }
+        }
+        MPI_Finalize();
+}
