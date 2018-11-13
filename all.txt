@@ -221,7 +221,7 @@ void main(int argc,char*argv[])
 
 
 
-Simpson
+Simpson rule Integration
 
 #include<stdio.h>
 #include<string.h>
@@ -561,7 +561,7 @@ void main(int argc, char* argv[]){
 
 
 
-Interpolation to calculate function [Laplace]
+Interpolation to calculate function [Langragian]
 
 #include<stdio.h>
 #include<string.h>
@@ -660,7 +660,7 @@ int main(int argc,char *argv[])
 }
 
 
-Interpolation to calculate function f(x) [Laplaze]
+Interpolation to calculate function f(x) [Langragian]
 
 #include<stdio.h>
 #include<string.h>
@@ -762,7 +762,7 @@ void main(int argc,char*argv[])
 
 
 
-Integration
+Integration using trapezoidal rule
 
 #include<stdio.h>
 #include<string.h>
@@ -825,7 +825,7 @@ int main(int argc,char *argv[])
 
 
 
-Matrix Matrix multiplication part 2
+Matrix(Vector) Matrix multiplication 1-D to 2-D
 
 
 #include<stdio.h>
@@ -898,7 +898,7 @@ int main(int argc,char *argv[])
 
 
 
- Program for matrix multiplication 
+ Program for 2-D matrix to 1-D matrix multiplication 
 
  #include<stdio.h>
 #include<string.h>
@@ -1223,7 +1223,94 @@ void main(int argc, char* argv[] )
 }
 
 
+Matrix Multiplication using hypercube
 
+
+
+#include<mpi.h>
+#include<math.h>
+#include<stdio.h>
+
+float mat1[4][4] = {{0.0, 1.0, 2.0, 3.0}, {4.0, 5.0, 6.0, 7.0},
+                                                {0.0, 1.0, 2.0, 3.0}, {4.0, 5.0, 6.0, 7.0}};
+ 
+float mat2[4][4] = {{0.0, 1.0, 2.0, 3.0}, {4.0, 5.0, 6.0, 7.0},
+                                                {0.0, 1.0, 2.0, 3.0}, {4.0, 5.0, 6.0, 7.0}};
+
+float mat3[4][4];
+
+
+float matmul(int myid, int size, int rem, int n);
+
+
+void main(int argc, char* argv[]){
+
+        int n, p, i, j, rem, num;
+        float h, result, b, pi;
+        float my_a, my_range;
+
+        int myid, source, dest, tag;
+        MPI_Status status;
+        float my_result;
+        n = 8;    
+        int a = 0;  
+        dest = 0;        
+        tag = 123;        
+
+        MPI_Init(&argc,&argv);             
+        MPI_Comm_rank(MPI_COMM_WORLD, &myid); 
+        MPI_Comm_size(MPI_COMM_WORLD, &p);    
+        rem = n%p;
+        int size = (n-rem)/p;
+        rem = size + rem; 
+
+        my_result = matmul(myid, 1, 1, n);
+
+        //printf("Process %d has the partial result of %f\n", myid,my_result);
+
+                if(myid == 0) {
+                        result = my_result;
+                        mat3[myid/4][myid%4] = result;
+                for (i=1;i<p;i++) {
+                                source = i;
+                                float my_result1;          
+                                MPI_Recv(&my_result1, 1, MPI_FLOAT, source, tag,
+                                                MPI_COMM_WORLD, &status);
+                            mat3[i/4][i%4] = my_result1; 
+
+                }
+
+                for (i=0; i<4; i++){
+                        for (j=0; j<4; j++){
+                                printf("%f ", mat3[i][j]);
+                        }
+                        printf("\n");
+                }
+                }
+
+                else{
+                MPI_Send(&my_result, 1, MPI_FLOAT, dest, tag,
+                          MPI_COMM_WORLD);      
+                }
+                MPI_Finalize();
+}
+
+float matmul(int myid, int size, int rem, int n){
+        int j, i, aij = 4;
+                float value;
+
+                i = myid / 4;
+                j = myid % 4;
+                int k;
+
+        value = 0.0;             
+                for (k=0;k<aij;k++) {     
+                        value += mat1[i][k]*mat2[k][j];
+                }
+
+                //printf("\n");
+                return (value);
+}
 
 
 
@@ -1347,4 +1434,147 @@ void main(int argc, char* argv[] )
                 }
         }
         MPI_Finalize();
+}
+
+
+
+Wrap around Matrix Multiplication
+
+
+
+
+
+#include<stdio.h>
+#include<string.h>
+#include"mpi.h"
+#include<math.h>
+
+MPI_Status status;
+
+int leftShift(int my_rank, int my_a, int d){
+        int aux;
+        int i = my_rank/d;
+        int j = my_rank%d;
+        int send_r = ((i-1+d)%d)*d + j;
+        int recv_r = ((i+1)%d)*d + j;
+        if(i%2==0){
+                MPI_Send(&my_a,1,MPI_INT,send_r,1,MPI_COMM_WORLD);
+                MPI_Recv(&aux,1,MPI_INT,recv_r,2,MPI_COMM_WORLD,&status);
+        }
+        else{
+                MPI_Recv(&aux,1,MPI_INT,recv_r,1,MPI_COMM_WORLD,&status);
+                MPI_Send(&my_a,1,MPI_INT,send_r,2,MPI_COMM_WORLD);
+        }
+
+        return aux;
+}
+
+int upShift(int my_rank, int my_b, int d){
+        int aux;
+        int i = my_rank/d;
+        int j = my_rank%d;
+        int send_r = i*d + (j-1+d)%d;
+        int recv_r = (i)*d + (j+1)%d;
+        if(j%2==0){
+                MPI_Send(&my_a,1,MPI_INT,send_r,1,MPI_COMM_WORLD);
+                MPI_Recv(&aux,1,MPI_INT,recv_r,2,MPI_COMM_WORLD,&status);
+        }
+        else{
+                MPI_Recv(&aux,1,MPI_INT,recv_r,1,MPI_COMM_WORLD,&status);
+                MPI_Send(&my_a,1,MPI_INT,send_r,2,MPI_COMM_WORLD);
+        }
+
+        return aux;
+}
+
+void main(int argc, char* argv[]){
+        int my_rank,p,source,dest,tag=0;
+        //MPI_Status status;
+        MPI_Init(&argc, &argv);
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+        int my_a,my_b,my_c=0;
+        int d = sqrt(p);
+
+        if(my_rank==0){
+                int arr[100][100];
+                int brr[100][100];
+                int crr[100][100];
+                int i,j;
+                printf("Enter A Matrix : \n");
+                for(i=0;i<d;i++){
+                        for(j=0;j<d;j++){
+                                scanf("%d", &arr[i][j]);
+                        }
+                }
+
+                printf("Enter B Matrix : \n");
+                for(i=0;i<d;i++){
+                        for(j=0;j<d;j++){
+                                scanf("%d", &brr[i][j]);
+                        }
+                }
+
+
+                my_a = arr[0][0];
+                my_b = brr[0][0];
+
+                for(i=0;i<p;i++){
+                        int x = i/d;
+                        int y = i%d;
+                        int vala = arr[x][y];
+                        int valb = brr[x][y];
+                        MPI_Send(&vala,1,MPI_INT,i,tag,MPI_COMM_WORLD);
+                        MPI_Send(&valb,1,MPI_INT,i,tag+2,MPI_COMM_WORLD);
+                }
+
+                for(i=0;i<d;i++){
+                        my_c = my_c + my_a*my_b;
+                        my_a = leftShift(my_rank, my_a, d);
+                        my_b = upShift(my_rank,my_b, d);
+                }
+                crr[0][0] = my_c;
+                for(i=0;i<p;i++){
+                        int valc;
+                        MPI_Recv(&valc,1,MPI_INT,i,tag+3,MPI_COMM_WORLD,&status);
+                        int x = i/d;
+                        int y = i%d;
+                        crr[x][y] = valc;
+                }
+
+                for(i=0;i<d;i++){
+                        for(j=0;j<d;++){
+                                printf("%d ",crr[i][j]);
+                        }
+                        printf("\n");
+                }
+
+        }
+        else {
+                MPI_Recv(&my_a,1,MPI_INT,0,tag,MPI_COMM_WORLD,&status);
+                MPI_Recv(&my_b,1,MPI_INT,0,tag+2,MPI_COMM_WORLD,&status);
+
+
+                int i = my_rank/d;
+                int j = my_rank%d;
+                int x,y;
+                for(x=0;x<d-1;x++){
+                        if(i>x){
+                                my_a = leftShift(my_rank,my_a,d);
+                        }
+                        if(j>x){
+                                my_b = upshift(my_rank,my_b,d);
+                        }
+                }
+
+                for(i=0;i<d;i++){
+                        my_c = my_c + my_a*my_b;
+                        my_a = leftShift(my_rank, my_a, d);
+                        my_b = upShift(my_rank,my_b, d);
+                }
+
+                MPI_Send(&my_c,1,MPI_INT,0,tag+3,MPI_COMM_WORLD);
+        }
+
+        MPI_Finalize();
+
 }
